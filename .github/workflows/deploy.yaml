@@ -1,0 +1,35 @@
+name: WordPress Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: Classb48@
+          MYSQL_DATABASE: mywordpressDB
+          MYSQL_USER: wordpress_user
+          MYSQL_PASSWORD: Classb48@
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: docker-compose.yml
+          compose-version: '3'
+
+      - name: Build and Run Containers
+        run: docker-compose up -d
